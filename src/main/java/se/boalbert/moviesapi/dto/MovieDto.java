@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public class MovieDto {
 	private long id;
-
 	private String title;
 	private LocalDate releaseDate;
 	private int runTimeMins;

@@ -1,4 +1,6 @@
 HELP.md
+mysql
+mysql/ib_logfile0
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
