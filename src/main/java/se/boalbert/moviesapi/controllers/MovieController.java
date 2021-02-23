@@ -66,8 +66,4 @@ public class MovieController {
 		return service.findByTitle(title);
 	}
 
-
-
-
-
 }

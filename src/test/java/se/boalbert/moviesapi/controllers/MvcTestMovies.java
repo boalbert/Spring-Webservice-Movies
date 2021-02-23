@@ -1,5 +1,6 @@
 package se.boalbert.moviesapi.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,8 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MovieController.class)
@@ -31,8 +33,11 @@ public class MvcTestMovies {
 	@Autowired
 	private MockMvc mvc;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@Test
-	void callingUrlMoviesWithIdShouldReturnOneMovieAsJson() throws Exception {
+	void callingUrlMoviesWithId_ReturnOneMovieAsJson() throws Exception {
 
 		when(service.getOne(1L))
 				.thenReturn(Optional.of(new MovieDto(1, "Title", LocalDate.of(2020, 1, 1), 123, 5.0)));
@@ -47,7 +52,7 @@ public class MvcTestMovies {
 	}
 
 	@Test
-	void callingUrlMoviesWithInvalidIdThrowsNotFoundException() throws Exception {
+	void callingUrlMoviesWithInvalidId_ThrowNotFoundException() throws Exception {
 
 		when(service.getOne(1L))
 				.thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -63,7 +68,7 @@ public class MvcTestMovies {
 	}
 
 	@Test
-	void callingAllMoviesShouldReturnListOfAllMovies() throws Exception {
+	void callingAllMovies_ReturnListOfAllMovies() throws Exception {
 		when(service.getAllMovies())
 				.thenReturn(List.of(
 						new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0),
@@ -72,21 +77,42 @@ public class MvcTestMovies {
 		MvcResult mvcResult = mvc.perform(
 				MockMvcRequestBuilders.get("/movies")
 						.accept(MediaType.APPLICATION_JSON))
-				.andReturn();
+						.andReturn();
 
 		assertThat(mvcResult.getResponse().getStatus()).isEqualTo(200);
 	}
 
 	@Test
-	public void givenEmployees_whenGetEmployees_thenReturnJsonArray()
-			throws Exception {
-
+	void whenValidMoviePosted_thenReturnsHttpStatusCreated() throws Exception {
 		MovieDto newMovieDto = new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
 
-		given(service.createMovie(newMovieDto)).willReturn(newMovieDto);
 
-		mvc.perform(MockMvcRequestBuilders.post("/movies")
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+		mvc.perform(post("/movies").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsBytes(newMovieDto)))
+				.andExpect(status().isCreated());
 	}
+
+	@Test
+	void whenNullValue_thenReturns400() throws Exception {
+		MovieDto newMovieDto = new MovieDto(null, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
+
+		mvc.perform(post("/movies").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsBytes(newMovieDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+
+
+	//	@Test
+	//	public void givenEmployees_whenGetEmployees_thenReturnJsonArray()
+	//			throws Exception {
+	//
+	//		MovieDto newMovieDto = new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
+	//
+	//		given(service.createMovie(newMovieDto)).willReturn(newMovieDto);
+	//
+	//		mvc.perform(MockMvcRequestBuilders.post("/movies")
+	//				.contentType(MediaType.APPLICATION_JSON))
+	//				.andExpect(status().isOk());
+	//	}
 }
