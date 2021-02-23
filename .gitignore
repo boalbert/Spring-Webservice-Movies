@@ -1,6 +1,8 @@
 HELP.md
 target/
 mysql/
+/mysql/
+/mysql/mysql/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -32,4 +34,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/mysql/
+
