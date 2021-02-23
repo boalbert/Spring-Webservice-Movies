@@ -6,7 +6,6 @@ import org.springframework.web.server.ResponseStatusException;
 import se.boalbert.moviesapi.dto.MovieDto;
 import se.boalbert.moviesapi.dto.MovieRating;
 import se.boalbert.moviesapi.entity.MovieEntity;
-import se.boalbert.moviesapi.exceptions.InvalidMovieRatingException;
 import se.boalbert.moviesapi.mappers.MovieMapper;
 import se.boalbert.moviesapi.repo.MovieRepo;
 
@@ -76,7 +75,7 @@ public class MovieService implements Service {
 			MovieEntity updatedMovieEntity = movieEntity.get();
 
 			if (movieRating != null && !(movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
-//				throw new InvalidMovieRatingException(id); // TODO Return response as Json
+				//				throw new InvalidMovieRatingException(id); // TODO Return response as Json
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid IMDB Rating: " + movieRating.imdbRating + ". Accepts '1.0' - '10.0'."); // TODO Return response as Json
 
 			if (movieRating != null && (movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
@@ -88,6 +87,17 @@ public class MovieService implements Service {
 					ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " not found.");
 		}
 
+	}
+
+	@Override
+	public Optional<MovieDto> findByTitle(String title) {
+		Optional<MovieEntity> movieEntity = movieRepo.findByTitle(title);
+		if(movieEntity.isPresent())
+			return movieMapper.mapp(movieRepo.findByTitle(title));
+		else {
+			throw new
+					ResponseStatusException(HttpStatus.NOT_FOUND, "Title: " + title + " not found.");
+		}
 	}
 }
 

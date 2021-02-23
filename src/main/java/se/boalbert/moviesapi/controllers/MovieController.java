@@ -8,6 +8,7 @@ import se.boalbert.moviesapi.dto.MovieRating;
 import se.boalbert.moviesapi.services.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class MovieController {
@@ -58,6 +59,13 @@ public class MovieController {
 	public MovieDto update(@PathVariable long id, @RequestBody MovieRating movieRating) {
 		return service.update(id, movieRating);
 	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/movies/search")
+	@ResponseBody
+	public Optional<MovieDto> findByTitle(@RequestParam(value="title") String title) {
+		return service.findByTitle(title);
+	}
+
 
 
 

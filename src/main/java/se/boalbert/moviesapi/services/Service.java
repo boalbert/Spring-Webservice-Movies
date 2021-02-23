@@ -19,4 +19,6 @@ public interface Service {
 	MovieDto replace(Long id, MovieDto movieDto);
 
 	MovieDto update(long id, MovieRating movieRating);
+
+	Optional<MovieDto> findByTitle(String title);
 }
