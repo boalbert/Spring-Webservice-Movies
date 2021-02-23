@@ -1,7 +1,6 @@
 HELP.md
-mysql
-mysql/ib_logfile0
 target/
+mysql/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -33,3 +32,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/mysql/
