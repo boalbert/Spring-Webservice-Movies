@@ -14,8 +14,6 @@ public class MovieEntity {
 	private LocalDate releaseDate;
 	private int runTimeMins;
 	private double imdbRating;
-	//private List<Directors> - köra en list så man kan hantera flera regissörer?
-
 
 	public MovieEntity() {
 	}

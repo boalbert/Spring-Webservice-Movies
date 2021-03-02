@@ -35,7 +35,7 @@ public class MovieController {
 		return service.getAllMovies();
 	}
 
-	//TODO Write test for POST
+	// Test written
 	@PostMapping("/movies")
 	@ResponseStatus(HttpStatus.CREATED)
 	public MovieDto create(@RequestBody MovieDto movieDto) {
@@ -43,7 +43,7 @@ public class MovieController {
 	}
 
 	// TODO Write test for Delete
-	@DeleteMapping
+	@DeleteMapping("/movies/{id}")
 	public void delete(@PathVariable Long id) {
 		service.delete(id);
 	}
@@ -62,8 +62,8 @@ public class MovieController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/movies/search")
 	@ResponseBody
-	public Optional<MovieDto> findByTitle(@RequestParam(value="title") String title) {
-		return service.findByTitle(title);
+	public List<MovieDto> findByTitleContains(@RequestParam(value="title") String title) {
+		return service.findAllByContainsTitle(title);
 	}
 
 }

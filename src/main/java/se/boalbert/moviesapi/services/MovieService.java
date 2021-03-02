@@ -15,10 +15,10 @@ import java.util.Optional;
 @Component
 public class MovieService implements Service {
 
-	// These will be used to convert Movie to Dto / etc
-	private MovieMapper movieMapper;
-	// This will be used to talk to the database
-	private MovieRepo movieRepo;
+
+	private final MovieMapper movieMapper;
+
+	private final MovieRepo movieRepo;
 
 	public MovieService(MovieMapper movieMapper, MovieRepo movieRepo) {
 		this.movieMapper = movieMapper;
@@ -75,7 +75,6 @@ public class MovieService implements Service {
 			MovieEntity updatedMovieEntity = movieEntity.get();
 
 			if (movieRating != null && !(movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
-				//				throw new InvalidMovieRatingException(id); // TODO Return response as Json
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid IMDB Rating: " + movieRating.imdbRating + ". Accepts '1.0' - '10.0'."); // TODO Return response as Json
 
 			if (movieRating != null && (movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
@@ -90,14 +89,15 @@ public class MovieService implements Service {
 	}
 
 	@Override
-	public Optional<MovieDto> findByTitle(String title) {
-		Optional<MovieEntity> movieEntity = movieRepo.findByTitle(title);
-		if(movieEntity.isPresent())
-			return movieMapper.mapp(movieRepo.findByTitle(title));
+	public List<MovieDto> findAllByContainsTitle(String title) {
+
+		List<MovieEntity> movieEntities = movieRepo.findAllByTitleContains(title);
+
+		if (!movieEntities.isEmpty())
+			return movieMapper.mapp(movieRepo.findAllByTitleContains(title));
 		else {
 			throw new
-					ResponseStatusException(HttpStatus.NOT_FOUND, "Title: " + title + " not found.");
+					ResponseStatusException(HttpStatus.NOT_FOUND, "No matching title for: " + title);
 		}
 	}
 }
-

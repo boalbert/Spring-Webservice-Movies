@@ -20,5 +20,5 @@ public interface Service {
 
 	MovieDto update(long id, MovieRating movieRating);
 
-	Optional<MovieDto> findByTitle(String title);
+	List<MovieDto> findAllByContainsTitle(String title);
 }

@@ -29,7 +29,6 @@ public class LoadDatabaseData {
 			LOGGER.info("Inserting sample data into DB: " + movieRepo.save(new MovieEntity(8,"Pulp Fiction", LocalDate.of(1994, 10, 14),154,8.9)));
 			LOGGER.info("Inserting sample data into DB: " + movieRepo.save(new MovieEntity(9,"The Good, the Bad and the Ugly", LocalDate.of(1967, 12, 29),178,8.8)));
 			LOGGER.info("Inserting sample data into DB: " + movieRepo.save(new MovieEntity(10,"The Lord of the Rings: The Fellowship of the Ring", LocalDate.of(2001, 12, 19),178,8.8)));
-
 		};
 	}
 }

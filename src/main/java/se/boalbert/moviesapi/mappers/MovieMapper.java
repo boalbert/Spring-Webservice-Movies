@@ -14,7 +14,6 @@ public class MovieMapper {
 	public MovieMapper() {
 	}
 
-	// findOne
 	public Optional<MovieDto> mapp(Optional<MovieEntity> optionalMovie) {
 
 		if (optionalMovie.isEmpty()) {
@@ -24,10 +23,6 @@ public class MovieMapper {
 
 	}
 
-	// Create, post, patch
-	// 1. Receive a Movie object
-	// 2. Fetch all the properties via getX
-	// 3. Set there properties for the new object (Dto)
 	public MovieDto mapp(MovieEntity movieEntity) {
 		return new MovieDto(movieEntity.getId(), movieEntity.getTitle(), movieEntity.getReleaseDate(), movieEntity.getRunTimeMins(), movieEntity.getImdbRating());
 	}
@@ -38,15 +33,10 @@ public class MovieMapper {
 
 	}
 
-
-	// Get all
-	// 1. Recieve a movie-list
-	// The stream converts every Movie object - converts to Dto - saves in a new list
 	public List<MovieDto> mapp(List<MovieEntity> all) {
 
 		return all.stream()
 				.map(this :: mapp)
-//				.map(movie -> mapp(movie))
 				.collect(Collectors.toList());
 	}
 
