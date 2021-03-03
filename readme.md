@@ -27,5 +27,4 @@ Klona projektet.
 
 Kör applikationen via Docker:
 1. `mvn clean package`
-2. `docker-compose build`
-3. `docker-compose up -d`
+3. `docker-compose up --build -d`

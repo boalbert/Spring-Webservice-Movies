@@ -15,9 +15,7 @@ import java.util.Optional;
 @Component
 public class MovieService implements Service {
 
-
 	private final MovieMapper movieMapper;
-
 	private final MovieRepo movieRepo;
 
 	public MovieService(MovieMapper movieMapper, MovieRepo movieRepo) {
@@ -63,7 +61,7 @@ public class MovieService implements Service {
 
 		} else
 			throw new
-					ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " not found.");
+					ResponseStatusException(HttpStatus.NOT_FOUND, "MovieId " + id + " not found.");
 
 	}
 
@@ -75,7 +73,7 @@ public class MovieService implements Service {
 			MovieEntity updatedMovieEntity = movieEntity.get();
 
 			if (movieRating != null && !(movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid IMDB Rating: " + movieRating.imdbRating + ". Accepts '1.0' - '10.0'."); // TODO Return response as Json
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid IMDB Rating: " + movieRating.imdbRating + ". Accepts '1.0' - '10.0'.");
 
 			if (movieRating != null && (movieRating.imdbRating >= 1.0 && movieRating.imdbRating <= 10.0))
 				updatedMovieEntity.setImdbRating(movieRating.imdbRating);
@@ -83,7 +81,7 @@ public class MovieService implements Service {
 
 		} else {
 			throw new
-					ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " not found.");
+					ResponseStatusException(HttpStatus.NOT_FOUND, "MovieId " + id + " not found.");
 		}
 
 	}
@@ -97,7 +95,7 @@ public class MovieService implements Service {
 			return movieMapper.mapp(movieRepo.findAllByTitleContains(title));
 		else {
 			throw new
-					ResponseStatusException(HttpStatus.NOT_FOUND, "No matching title for: " + title);
+					ResponseStatusException(HttpStatus.NOT_FOUND, "No matching title for search: '" + title + "'.");
 		}
 	}
 }

@@ -7,14 +7,16 @@ services:
     ports:
       - 5050:5050
     depends_on:
-      - maria_db
+      - db
     command: sh -c './wait-for mysql_db:3306 -- npm start'
 
-  maria_db:
+  db:
     image: mariadb:10.5
     restart: always
     ports:
       - 3306:3306
+    container_name: db
+    hostname: db
     environment:
       MYSQL_DATABASE: movies
       MYSQL_PASSWORD: wp

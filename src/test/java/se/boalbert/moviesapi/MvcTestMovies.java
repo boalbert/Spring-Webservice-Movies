@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,10 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MovieController.class)
 public class MvcTestMovies {
 
-	@Autowired
-	public ObjectMapper objectMapper;
 	@MockBean
-	Service service;
+	private Service service;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@Autowired
 	private MockMvc mvc;
 
@@ -114,71 +115,49 @@ public class MvcTestMovies {
 
 		MovieDto movieDto = new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
 
+		when(service.replace(eq(1L), any(MovieDto.class))).thenReturn(movieDto);
+
 		mvc.perform(put("/movies/1")
+				.content(objectMapper.writeValueAsString(movieDto))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(objectMapper.writeValueAsString(
-						movieDto))
-				.accept(MediaType.APPLICATION_JSON)
-		).andExpect(status().isOk())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(movieDto.getTitle()));
 	}
 
 	@Test
-	void patchMovieWithValidRating_ReturnsResponseOK() throws Exception {
+	void patchMovieWithValidRating_ReturnsResponseStatusResponseOK() throws Exception {
 
 		MovieDto movieDto = new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
 
-
-		when(service.update(eq(1L), any(MovieRating.class))).thenReturn(
-				movieDto);
+		when(service.update(eq(1L), any(MovieRating.class))).thenReturn(movieDto);
 
 		MovieRating movieRating = new MovieRating();
 		movieRating.setImdbRating(6.0);
 
 		mvc.perform(patch("/movies/{id}", 1L)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(objectMapper.writeValueAsString(movieRating))
-		).andExpect(status().isOk())
+				.content(objectMapper.writeValueAsString(movieRating)))
+				.andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.imdbRating").value(movieDto.getImdbRating()));
 	}
 
 	@Test
-	void searchForMovieWithCorrectTitle_ReturnMovieInResponseBody() throws Exception {
+	void searchForMovieWithCorrectTitle_ReturnResponseStatus200() throws Exception {
 
-		MovieDto movieDto = new MovieDto(1L, "MovieTitle", LocalDate.of(1999, 1, 1), 123, 5.0);
+		List<MovieDto> list = List.of(
+				new MovieDto(1L, "MovieTitle", LocalDate.of(1999, 1, 1), 123, 5.0),
+				new MovieDto(2L, "MovieTitle", LocalDate.of(1999, 1, 1), 123, 5.0)
+		);
 
-
-		when(service.findAllByContainsTitle("Title")).thenReturn(List.of(
-				new MovieDto(1L, "Title", LocalDate.of(1999, 1, 1), 123, 5.0),
-				new MovieDto(2L, "AnotherTitle", LocalDate.of(1999, 1, 1), 123, 5.0)));
+		when(service.findAllByContainsTitle("title")).thenReturn(list);
 
 		mvc.perform(
-				MockMvcRequestBuilders.get("/movies/search?title=MovieTitle")
+				MockMvcRequestBuilders.get("/movies/search?title=title")
 						.accept(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(movieDto))
+						.content(objectMapper.writeValueAsString(list))
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-
-	}
-
-	//	@Test
-	//	void serchForMovieThatIsNotFound_ReturnsResponseStatusException404() throws Exception {
-	//
-	//		mvc.perform(
-	//				MockMvcRequestBuilders.get("/movies/search?title=MovieTitle")
-	//						.accept(MediaType.APPLICATION_JSON)
-	//						.content(objectMapper.writeValueAsString(any(List.of())))
-	//						.contentType(MediaType.APPLICATION_JSON))
-	//				.andExpect(status().isOk());
-	//
-	//	}
-
-	@Test
-	void deleteDirectorWithInValidIdAndReturnStatusNotFound() throws Exception {
-		doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND)).when(service).delete(1L);
-
-		mvc.perform(MockMvcRequestBuilders.delete("/movies/{id}", 1))
-				.andExpect(status().isNotFound());
+						.andExpect(status().isOk());
 	}
 
 	@Test
@@ -187,29 +166,24 @@ public class MvcTestMovies {
 				.andExpect(status().isOk());
 	}
 
+	@Test
+	void deleteDirectorWithInValidId_ReturnStatusNotFound() throws Exception {
+		doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND)).when(service).delete(1L);
 
-	//	@Test
-	//	void whenNullValue_thenReturns400() throws Exception {
-	//		MovieDto newMovieDto = new MovieDto(null, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
-	//
-	//		mvc.perform(post("/movies").contentType(MediaType.APPLICATION_JSON)
-	//				.content(objectMapper.writeValueAsBytes(newMovieDto)))
-	//				.andExpect(status().isBadRequest());
-	//	}
+		mvc.perform(MockMvcRequestBuilders.delete("/movies/{id}", 1))
+				.andExpect(status().isNotFound());
+	}
 
+	@Test
+	void replaceMovieWith_Invalid_IdViaPut_ReturnResponseNotFound() throws Exception {
+		MovieDto movieDto = new MovieDto(1L, "MovieTitle", LocalDate.of(1999, 1, 1), 123, 5.0);
 
-	//	@Test
-	//	public void givenEmployees_whenGetEmployees_thenReturnJsonArray()
-	//			throws Exception {
-	//
-	//		MovieDto newMovieDto = new MovieDto(1, "Title", LocalDate.of(1999, 1, 1), 123, 5.0);
-	//
-	//		given(service.createMovie(newMovieDto)).willReturn(newMovieDto);
-	//
-	//		mvc.perform(MockMvcRequestBuilders.post("/movies")
-	//				.contentType(MediaType.APPLICATION_JSON))
-	//				.andExpect(status().isOk());
-	//	}
+		when(service.replace(anyLong(), any(MovieDto.class))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-
+		mvc.perform(MockMvcRequestBuilders
+				.put("/movies/{id}", 1)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(movieDto)))
+				.andExpect(status().isNotFound());
+	}
 }

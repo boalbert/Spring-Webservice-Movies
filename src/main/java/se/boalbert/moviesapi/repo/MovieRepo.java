@@ -8,7 +8,6 @@ import java.util.Optional;
 
 
 public interface MovieRepo extends JpaRepository<MovieEntity, Long> {
-	Optional<MovieEntity> findByTitle(String title);
 
 	List<MovieEntity> findAllByTitleContains(String title);
 
