@@ -39,6 +39,4 @@ public class MovieMapper {
 				.map(this :: mapp)
 				.collect(Collectors.toList());
 	}
-
-
 }
